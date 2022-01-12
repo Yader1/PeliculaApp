@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient} from '@angular/common/http';
-import { PeliculaDetalle, RespuestaCredits, RespuestaMDB } from '../interfaces/interfaces';
+import { Genre, PeliculaDetalle, RespuestaCredits, RespuestaMDB } from '../interfaces/interfaces';
 import { environment } from '../../environments/environment';
 
 //Variables Globales
@@ -14,6 +14,7 @@ const apikey = environment.apiKey;
 export class MoviesService {
 
   private popularesPage = 0;
+  generos: Genre[] = [];
   constructor( private http: HttpClient) { }
 
   //Ejercutar query
@@ -30,7 +31,7 @@ export class MoviesService {
     const hoy = new Date();
     const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
     
-    const mes = hoy .getMonth() +1;
+    const mes = hoy .getMonth() + 1;
     let mesString;
 
     if( mes < 10){
@@ -40,10 +41,10 @@ export class MoviesService {
     }
 
     //Costruimos la fechas
-    const inicio = `${ hoy.getFullYear }-${ mesString }-01`;
-    const final = `${ hoy.getFullYear }-${ mesString }-${ ultimoDia }`;
+    const inicio = `${ hoy.getFullYear() }-${ mesString }-01`;
+    const final = `${ hoy.getFullYear() }-${ mesString }-${ ultimoDia }`;
 
-    return this.ejecutarQuery<RespuestaMDB>(`/discover/movie?primary_release_date.gte=2021-12-15&primary_release_date.lte=2022-01-08`);
+    return this.ejecutarQuery<RespuestaMDB>(`/discover/movie?primary_release_date.gte=${ inicio }&primary_release_date.lte=${ final }`);
   }
 
   //Get lista de populares
@@ -67,5 +68,15 @@ export class MoviesService {
   //buscar
   buscarPelicula( text: string ){
     return this.ejecutarQuery(`/search/movie?query=${ text }`);
+  }
+
+  //Gategoria
+  cargarGenero(): Promise<Genre[]>{
+    return new Promise( resolve => {
+      this.ejecutarQuery(`/genre/movie/list?a=1`).subscribe( resp =>{
+        this.generos = resp['genres'];
+        resolve(this.generos);
+      });
+    });
   }
 }

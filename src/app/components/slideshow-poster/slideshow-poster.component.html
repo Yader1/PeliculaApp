@@ -1,7 +1,7 @@
 <ion-slides [options]="slideOpts">
   <!--En este ngFor vamos a iterar los datos del array que recibimos de la api-->
   <ion-slide class="poster" *ngFor="let pelicula of peliculas">
-    <ion-card (click)="verDetalle( pelicula.id )">
+    <ion-card mode="md" (click)="verDetalle( pelicula.id )">
       <img [src]="pelicula.poster_path | imagen">
     </ion-card>
   </ion-slide>
